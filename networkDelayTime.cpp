@@ -1,43 +1,44 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int networkDelayTime(vector<vector<int>>& times, int n, int k) {
+class Solution {
+public:
+    int networkDelayTime(vector<vector<int>>& times, int n, int k) {
 
-    int tam = times.size();
-    vector<vector<pair<int, int>>> adj(n);
-    for(int i = 0; i < tam; i++){
-        adj[times[i][0]].push_back({times[i][1], times[i][2]});
-    }
+        priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+        
+        vector<vector<pair<int,int>>> adj(n+1);
+        for(auto node : times){
+            adj[node[0]].push_back({node[1], node[2]});
+        }
 
-    priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        vector<int> delay(n+1, INT_MAX);
 
-    vector<int> delay(n, INT_MAX);
+        int inner_sum;
+        delay[k]=0;
+        pq.push({0, k});
+        while(!pq.empty()){
 
-    pq.push({0, k});
-    delay[k] = 0;
+            pair<int,int> current=pq.top();
+            pq.pop();
 
-    int u, v, weight, inner_sum;
-    while(!pq.empty()){
-
-        u = pq.top()[1];
-        pq.pop();
-
-        for(auto x : adj[u]){
-            v = x.first;
-            weight = x.second;
-
-            inner_sum = delay[u] + weight;
-            if(delay[v] > inner_sum){
-                delay[v] = inner_sum;
-                pq.push({delay[v], v});
+            if(current.first > delay[current.second]) continue;
+            for(auto neighbour : adj[current.second]){
+                inner_sum = delay[current.second] + neighbour.second;
+                if(delay[neighbour.first] > inner_sum){
+                    delay[neighbour.first] = inner_sum;
+                    pq.push({delay[neighbour.first], neighbour.first});
+                }
 
             }
         }
+
+        int minimum_time =- 1;
+        for(int i = 1; i <= n; i++){
+            if(delay[i] == INT_MAX) return -1;
+            minimum_time= max(minimum_time, delay[i]);
+        }
+
+        return minimum_time;
     }
-
-    sort(delay.begin(), delay.end(), [](int a, int b){
-        return a > b;
-    });
-
-    return delay[0];
-}
+};
