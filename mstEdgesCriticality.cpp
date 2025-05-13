@@ -25,14 +25,14 @@ public:
             return root;
         }
         void _union(int va, int vb){
-            if (t[va].second < t[vb].second){
-                t[va].first = vb;
-                t[vb].second = t[va].second;
-            }
-            else{
-                t[vb].first = va;
-                t[va].second = t[vb].second;
-            }
+
+            if(t[va].second < t[vb].second) 
+                swap(va, vb);
+
+            t[va].first = t[vb].first;
+
+            if(t[va].second == t[vb].second)
+                t[vb].second++;
         }
     };
 
@@ -44,7 +44,7 @@ public:
         UnionFind uf(n);
         uf.init();
 
-        int mst_size = 0;
+        int mst_size = 0, total_edges = 0;
         int edges_size = edges.size();
 
         if (include == true){
@@ -52,6 +52,7 @@ public:
             mst.push_back(edges[subject]);
             total_sum += edges[subject][2];
             mst_size++;
+            total_edges++;
         }
 
         for (int i = 0; i < edges_size && mst.size() < n; i++){
@@ -66,11 +67,12 @@ public:
                 mst.push_back(edges[i]);
                 total_sum += edges[i][2];
                 mst_size++;
+                total_edges++;
             }
         }
 
-        for (int i = 1; i < n; i++)
-            if (uf.find(0) != uf.find(i)) return INT_MAX;
+        if (total_edges != n-1) 
+            return INT_MAX;
 
         return total_sum;
     }

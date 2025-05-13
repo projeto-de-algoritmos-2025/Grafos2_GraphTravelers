@@ -23,7 +23,7 @@ public:
             pq.pop();
 
             if(current.first > delay[current.second]) continue;
-            for(auto neighbour : adj[current.second]){
+            for(auto& neighbour : adj[current.second]){
                 inner_sum = delay[current.second] + neighbour.second;
                 if(delay[neighbour.first] > inner_sum){
                     delay[neighbour.first] = inner_sum;
